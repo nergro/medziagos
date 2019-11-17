@@ -17,6 +17,9 @@ const Wrapper = styled.div`
   align-items: center;
   min-width: 400px;
   margin-top: 60px;
+  @media (max-width: 450px) {
+    min-width: 300px;
+  }
 `;
 const StyledSearch = styled(TextField)`
   width: 90%;
@@ -55,25 +58,36 @@ class MaterialsClass extends Component {
   onSearchChange = e => {
     let updatedList = this.state.materials;
     if (updatedList) {
-      updatedList = updatedList.filter(
-        material =>
+      updatedList = updatedList.filter(material => {
+        if (
           material.name.toLowerCase().search(e.target.value.toLowerCase()) !==
-          -1,
-      );
+          -1
+        ) {
+          return material;
+        }
+        if (
+          +e.target.value > material.density * 0.97 &&
+          +e.target.value < material.density * 1.03
+        ) {
+          return material;
+        }
+      });
     }
     this.setState({
       updatedMaterials: updatedList,
     });
   };
 
-  onClick = () => {};
+  onClick = () => {
+    window.location.assign('https://en.wikipedia.org/wiki/Acrylic');
+  };
 
   render() {
     const { updatedMaterials } = this.state;
     return (
       <Wrapper>
         <StyledSearch
-          label='Type material name...'
+          label='Type material name or density...'
           type='search'
           variant='outlined'
           onChange={this.onSearchChange}
@@ -83,7 +97,9 @@ class MaterialsClass extends Component {
             <TableHead>
               <StyledTableHead>
                 <TableCell align='left'>Name</TableCell>
-                <TableCell align='left'>Density</TableCell>
+                <TableCell align='left'>
+                  Density kg/m<sup>3</sup>
+                </TableCell>
               </StyledTableHead>
             </TableHead>
             <TableBody>
